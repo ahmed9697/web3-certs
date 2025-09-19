@@ -15,7 +15,7 @@ COPY pnpm-workspace.yaml ./
 COPY package.json ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/contracts/package.json ./packages/contracts/
-COPY packages/shared/package.json ./packages/shared/
+# The line for packages/shared/package.json has been removed.
 
 # Install ALL production dependencies for the entire monorepo
 RUN pnpm fetch --prod
