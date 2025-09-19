@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+    issuedCertificates Certificate[] // <-- أضف هذا السطر
+}
+// ... (User model should be above this)
+
+enum CertificateStatus {
+  PENDING
+  ISSUED
+  REVOKED
+}
+
+model Certificate {
+  id              Int               @id @default(autoincrement())
+  studentName     String
+  studentEmail    String
+  degreeName      String
+  degreeSubject   String
+  issueDate       DateTime
+
+  status          CertificateStatus @default(PENDING)
+
+  ipfsCID         String?           @unique
+  transactionHash String?           @unique
+
+  issuerId        Int
+  issuer          User              @relation(fields: [issuerId], references: [id])
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}

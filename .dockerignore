@@ -1,0 +1,21 @@
+# Git
+.git
+.gitignore
+
+# Node
+node_modules
+
+# Turbo
+.turbo
+
+# Local environment files
+.env
+.env.*
+
+# Python
+__pycache__/
+venv/
+
+# IDE / OS files
+.vscode
+.idea
