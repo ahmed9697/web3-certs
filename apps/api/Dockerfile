@@ -4,8 +4,6 @@ FROM node:20-alpine AS base
 RUN npm install -g pnpm
 
 # ---- Dependencies Stage ----
-# In this stage, we only install the dependencies. This layer will be cached
-# and only re-run if your package.json files change.
 FROM base AS dependencies
 WORKDIR /app
 COPY pnpm-lock.yaml ./
@@ -21,11 +19,10 @@ RUN pnpm fetch --prod
 RUN pnpm install -r --prod --offline
 
 # ---- Builder Stage ----
-# In this stage, we copy our source code and build the 'api' package.
 FROM base AS builder
 WORKDIR /app
 
-# Copy the dependencies from the previous stage
+# Copy dependencies from the previous stage
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY --from=dependencies /app/apps ./apps
 COPY --from=dependencies /app/packages ./packages
@@ -38,7 +35,6 @@ COPY . .
 RUN pnpm --filter api build
 
 # ---- Runner Stage ----
-# This is the final, small production image.
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
@@ -51,4 +47,3 @@ COPY --from=builder /app/apps/api/prisma ./prisma
 
 EXPOSE 3001
 CMD ["node", "dist/main.js"]
-
