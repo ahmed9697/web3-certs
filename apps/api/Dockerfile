@@ -15,7 +15,6 @@ COPY pnpm-workspace.yaml ./
 COPY package.json ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/contracts/package.json ./packages/contracts/
-# The line for packages/shared/package.json has been removed.
 
 # Install ALL production dependencies for the entire monorepo
 RUN pnpm fetch --prod
@@ -52,3 +51,4 @@ COPY --from=builder /app/apps/api/prisma ./prisma
 
 EXPOSE 3001
 CMD ["node", "dist/main.js"]
+
