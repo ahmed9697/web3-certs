@@ -1,5 +1,4 @@
 # ---- Base Stage ----
-# Defines a base image with pnpm installed.
 FROM node:20-alpine AS base
 RUN npm install -g pnpm
 
