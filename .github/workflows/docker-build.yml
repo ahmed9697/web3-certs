@@ -1,7 +1,7 @@
 name: Build and Push Docker Images
 
 on:
-  workflow_dispatch: # Allows us to run this manually
+  workflow_dispatch:
 
 jobs:
   build-and-push:
@@ -20,7 +20,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./apps/api/Dockerfile
+          file: ./apps/api/Dockerfile.prod # <-- التغيير هنا
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/web3certs-api:latest
 
