@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Certificate } from '@/types';
-import { useParams } from 'next/navigation'; // <-- 1. Import useParams
+import { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import type { Certificate } from "@/types";
+import { useParams } from "next/navigation"; // <-- 1. Import useParams
 
 // 2. Remove params from here
 export default function VerifyPage() {
@@ -17,18 +23,21 @@ export default function VerifyPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (id) { // <-- Use the id from the hook
+    if (id) {
+      // <-- Use the id from the hook
       const fetchCertificate = async () => {
         try {
           setIsLoading(true);
-          const response = await axios.get(`http://localhost:3001/certificates/public/${id}`);
+          const response = await axios.get(
+            `http://localhost:3001/certificates/public/${id}`,
+          );
           if (response.data) {
             setCertificate(response.data);
           } else {
-            setError('Certificate not found.');
+            setError("Certificate not found.");
           }
         } catch (err) {
-          setError('Failed to fetch certificate data.');
+          setError("Failed to fetch certificate data.");
         } finally {
           setIsLoading(false);
         }
@@ -39,14 +48,16 @@ export default function VerifyPage() {
 
   // ... the rest of your component code remains exactly the same
 
-  const renderStatusBadge = (status: Certificate['status']) => {
+  const renderStatusBadge = (status: Certificate["status"]) => {
     const colors = {
-      ISSUED: 'bg-green-100 text-green-800',
-      PENDING: 'bg-yellow-100 text-yellow-800',
-      REVOKED: 'bg-red-100 text-red-800',
+      ISSUED: "bg-green-100 text-green-800",
+      PENDING: "bg-yellow-100 text-yellow-800",
+      REVOKED: "bg-red-100 text-red-800",
     };
     return (
-      <span className={`px-2 py-1 text-sm font-medium rounded-full ${colors[status]}`}>
+      <span
+        className={`px-2 py-1 text-sm font-medium rounded-full ${colors[status]}`}
+      >
         {status}
       </span>
     );
@@ -57,7 +68,9 @@ export default function VerifyPage() {
       <Card className="w-full max-w-2xl shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl">Certificate Verification</CardTitle>
-          <CardDescription>This page displays the official status of an academic certificate.</CardDescription>
+          <CardDescription>
+            This page displays the official status of an academic certificate.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading && <p>Loading certificate data...</p>}
@@ -79,7 +92,9 @@ export default function VerifyPage() {
                 <p>{certificate.id}</p>
 
                 <p className="font-medium text-gray-500">IPFS CID:</p>
-                <p className="truncate">{certificate.ipfsCID || 'Not yet issued'}</p>
+                <p className="truncate">
+                  {certificate.ipfsCID || "Not yet issued"}
+                </p>
               </div>
             </div>
           )}

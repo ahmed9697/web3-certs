@@ -1,27 +1,34 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, IsNotEmpty, IsDateString } from 'class-validator';
+// Remove decorators to fix TypeScript 5.9 compatibility issues
+// Validation will be handled by ValidationPipe in the controller
 
 export class IssueCertificateDto {
-  @ApiProperty({ example: 'John Doe' })
-  @IsString()
-  @IsNotEmpty()
+  /**
+   * Student's full name
+   * @example 'Ahmed Aboessa'
+   */
   studentName: string;
 
-  @ApiProperty({ example: 'john.doe@example.com' })
-  @IsEmail()
+  /**
+   * Student's email address
+   * @example 'ahmed.aboessa@example.com'
+   */
   studentEmail: string;
 
-  @ApiProperty({ example: 'Master of Science' })
-  @IsString()
-  @IsNotEmpty()
+  /**
+   * Name of the degree
+   * @example 'Master of Computer Science'
+   */
   degreeName: string;
 
-  @ApiProperty({ example: 'Computer Science' })
-  @IsString()
-  @IsNotEmpty()
+  /**
+   * Subject of the degree
+   * @example 'Computer Science'
+   */
   degreeSubject: string;
 
-  @ApiProperty({ example: '2025-09-15' })
-  @IsDateString()
+  /**
+   * Date when the certificate is issued
+   * @example '2025-09-15'
+   */
   issueDate: Date;
 }

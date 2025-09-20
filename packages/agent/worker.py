@@ -5,10 +5,11 @@ import time
 import requests
 from dotenv import load_dotenv
 from web3 import Web3
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, Field
 from typing import List
 
 # --- PYDANTIC MODELS FOR VC VALIDATION (NEW) ---
+# These classes define the exact structure we expect for our Verifiable Credential.
 class Degree(BaseModel):
     name: str
     subject: str
@@ -82,20 +83,24 @@ def main():
     w3.eth.default_account = signer.address
     contract_abi = get_contract_abi()
     registry_contract = w3.eth.contract(address=CONTRACT_ADDRESS, abi=contract_abi)
-
+    
     print(f"\n✅ Worker is fully initialized.")
     print(f"   - Listening for jobs on Redis list: {QUEUE_NAME}")
-    # ... (other startup messages)
+    print(f"   - Connected to blockchain node at: {RPC_URL}")
+    print(f"   - Using contract at address: {CONTRACT_ADDRESS}")
+    print(f"   - Signing transactions as: {signer.address}\n")
 
     while True:
         try:
-            # ... (code to get job from Redis remains the same)
             job_tuple = r.brpop(QUEUE_NAME)
             if not job_tuple: continue
             job_id = job_tuple[1]
             job_key = f"bull:certificate-issuance:{job_id}"
             job_data_str = r.hget(job_key, "data")
-            if not job_data_str: continue
+            if not job_data_str:
+                print(f"Could not find data for job ID: {job_id}")
+                continue
+
             cert_data = json.loads(job_data_str)
             cert_db_id = cert_data.get("id")
             print(f"\n--- PROCESSING JOB {job_id} (Cert ID: {cert_db_id}) ---")
@@ -105,17 +110,18 @@ def main():
 
             # 2. AI VALIDATION STEP (NEW)
             try:
+                # Pydantic checks if the 'vc' dictionary matches our required schema
                 VerifiableCredentialModel.model_validate(vc)
                 print("  > ✅ VC data is valid according to the Pydantic schema.")
             except Exception as e:
                 print(f"  > ❌ ERROR: VC data is invalid! Reason: {e}")
+                # In a real app, you would move the job to a failed queue here
                 raise e # Stop processing this job
 
             # 3. Upload VC to IPFS
             ipfs_cid = upload_to_ipfs(vc)
 
             # 4. Issue on Blockchain
-            # ... (rest of the blockchain and API callback logic remains the same)
             print(f"  > Preparing blockchain transaction...")
             nonce = w3.eth.get_transaction_count(signer.address)
             tx = registry_contract.functions.issue(ipfs_cid).build_transaction({
@@ -132,7 +138,7 @@ def main():
             print(f"  > Calling API to finalize status for Cert ID: {cert_db_id}...")
             finalize_payload = {"ipfsCID": ipfs_cid, "transactionHash": tx_hash_hex}
             requests.patch(API_FINALIZE_URL.format(cert_db_id), json=finalize_payload)
-
+            
             print(f"--- ✅ JOB {job_id} COMPLETED SUCCESSFULLY ---\n")
 
         except Exception as e:

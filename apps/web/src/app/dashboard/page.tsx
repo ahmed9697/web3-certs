@@ -1,17 +1,34 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { QRCodeSVG } from 'qrcode.react';
-import { IssueCertificateForm } from '@/components/IssueCertificateForm';
-import type { Certificate } from '@/types'; // <-- Import the shared type
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { QRCodeSVG } from "qrcode.react";
+import { IssueCertificateForm } from "@/components/IssueCertificateForm";
+import type { Certificate } from "@/types"; // <-- Import the shared type
 
 export default function DashboardPage() {
   const auth = useAuth();
@@ -22,12 +39,16 @@ export default function DashboardPage() {
     if (auth.isAuthenticated && auth.token) {
       const fetchCertificates = async () => {
         try {
-          const response = await axios.get('http://localhost:3001/certificates', {
-            headers: { Authorization: `Bearer ${auth.token}` },
-          });
+          const response = await axios.get(
+            "http://localhost:3001/certificates",
+            {
+              headers: { Authorization: `Bearer ${auth.token}` },
+            },
+          );
           setCertificates(response.data);
-        } catch { // <-- Cleaned up unused 'error' variable
-          toast.error('Failed to fetch certificates.');
+        } catch {
+          // <-- Cleaned up unused 'error' variable
+          toast.error("Failed to fetch certificates.");
         }
       };
       fetchCertificates();
@@ -36,19 +57,21 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     auth.logout();
-    router.push('/login');
+    router.push("/login");
   };
 
   const onCertificateIssued = (newCertificate: Certificate) => {
     setCertificates([newCertificate, ...certificates]);
-  }
+  };
 
   return (
     <main className="min-h-screen bg-gray-50/50 p-4 sm:p-8">
       <div className="mx-auto max-w-7xl space-y-8">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <Button onClick={handleLogout} variant="destructive">Logout</Button>
+          <Button onClick={handleLogout} variant="destructive">
+            Logout
+          </Button>
         </div>
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="lg:col-span-1">
@@ -58,7 +81,9 @@ export default function DashboardPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Issued Certificates</CardTitle>
-                <CardDescription>A list of all processed certificates.</CardDescription>
+                <CardDescription>
+                  A list of all processed certificates.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -79,12 +104,14 @@ export default function DashboardPage() {
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="outline" size="sm">View QR</Button>
+                              <Button variant="outline" size="sm">
+                                View QR
+                              </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="p-4">
-                              <QRCodeSVG 
-                                value={`${window.location.origin}/verify/${cert.id}`} 
-                                size={128} 
+                              <QRCodeSVG
+                                value={`${window.location.origin}/verify/${cert.id}`}
+                                size={128}
                               />
                               <p className="mt-2 text-center text-xs text-muted-foreground">
                                 ID: {cert.id}

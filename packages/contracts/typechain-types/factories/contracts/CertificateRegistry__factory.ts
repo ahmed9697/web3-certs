@@ -216,7 +216,7 @@ type CertificateRegistryConstructorParams =
   | ConstructorParameters<typeof ContractFactory>;
 
 const isSuperArgs = (
-  xs: CertificateRegistryConstructorParams
+  xs: CertificateRegistryConstructorParams,
 ): xs is ConstructorParameters<typeof ContractFactory> => xs.length > 1;
 
 export class CertificateRegistry__factory extends ContractFactory {
@@ -229,7 +229,7 @@ export class CertificateRegistry__factory extends ContractFactory {
   }
 
   override getDeployTransaction(
-    overrides?: NonPayableOverrides & { from?: string }
+    overrides?: NonPayableOverrides & { from?: string },
   ): Promise<ContractDeployTransaction> {
     return super.getDeployTransaction(overrides || {});
   }
@@ -241,7 +241,7 @@ export class CertificateRegistry__factory extends ContractFactory {
     >;
   }
   override connect(
-    runner: ContractRunner | null
+    runner: ContractRunner | null,
   ): CertificateRegistry__factory {
     return super.connect(runner) as CertificateRegistry__factory;
   }
@@ -253,12 +253,12 @@ export class CertificateRegistry__factory extends ContractFactory {
   }
   static connect(
     address: string,
-    runner?: ContractRunner | null
+    runner?: ContractRunner | null,
   ): CertificateRegistry {
     return new Contract(
       address,
       _abi,
-      runner
+      runner,
     ) as unknown as CertificateRegistry;
   }
 }

@@ -1,21 +1,40 @@
-# Git
+# --- Git ---
 .git
 .gitignore
 
-# Node
+# --- Node.js ---
 node_modules
+**/node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+# ⚠️ متستبعدش pnpm-lock.yaml ولا pnpm-workspace.yaml
 
-# Turbo
+# --- TurboRepo cache ---
 .turbo
 
-# Local environment files
+# --- Environment files ---
 .env
 .env.*
 
-# Python
+# --- Python ---
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
 venv/
+pip-log.txt
+pip-delete-this-directory.txt
 
-# IDE / OS files
+# --- IDE / OS ---
 .vscode
 .idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+Desktop.ini
+Thumbs.db

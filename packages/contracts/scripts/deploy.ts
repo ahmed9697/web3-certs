@@ -5,9 +5,7 @@ async function main() {
 
   await registry.waitForDeployment();
 
-  console.log(
-    `CertificateRegistry deployed to: ${registry.target}`
-  );
+  console.log(`CertificateRegistry deployed to: ${registry.target}`);
 }
 
 main().catch((error) => {

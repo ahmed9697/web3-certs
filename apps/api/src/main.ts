@@ -1,25 +1,39 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import { NestFactory } from '@nestjs/core';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-require-imports */
+const NestFactory = require('@nestjs/core').NestFactory;
 import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+const SwaggerModule = require('@nestjs/swagger').SwaggerModule;
+const DocumentBuilder = require('@nestjs/swagger').DocumentBuilder;
 import { ValidationPipe } from '@nestjs/common';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors(); // <-- ADD THIS LINE
+  // Enable CORS
+  app.enableCors();
 
-  app.useGlobalPipes(new ValidationPipe());
+  // Enable global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+  );
 
-  const config = new DocumentBuilder()
+  // Swagger configuration
+  const configBuilder = new DocumentBuilder();
+  const builtConfig = configBuilder
     .setTitle('Web3 Certificates API')
     .setDescription('API for issuing and verifying academic certificates')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+
+  const document = SwaggerModule.createDocument(app, builtConfig);
   SwaggerModule.setup('api', app, document);
 
+  // Start server
   await app.listen(3001, 'localhost');
 }
+
 bootstrap();

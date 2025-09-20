@@ -50,3 +50,33 @@ Start the Python Agent:Open a new terminal window.Navigate to the agent's direct
 ├── .gitignore
 ├── package.json
 └── README.md
+Web3 Academic Certificate Platform1. Project Vision & OverviewThis project is a complete, secure, and scalable platform for issuing, verifying, and revoking academic certificates. It uses a modern hybrid on-chain/off-chain architecture to ensure data privacy and integrity while minimizing blockchain transaction costs. A unique cryptographic fingerprint of each certificate is stored immutably on the blockchain, while the full certificate data (as a Verifiable Credential) is stored on the InterPlanetary File System (IPFS).This provides a tamper-proof system that employers and institutions can use for instant, trusted verification of academic credentials.2. System ArchitectureThe platform is designed with a modern microservice architecture, promoting clear separation of concerns and scalability.Frontend (apps/web): A Next.js 14 application with a React-based admin dashboard for issuing certificates and a public-facing portal for verification.Backend API (apps/api): A robust NestJS server that handles user authentication, database management (via Prisma), and dispatches jobs to a processing queue.AI Agent (packages/agent): An intelligent Python service that operates asynchronously. It processes jobs from the Redis queue, generates Verifiable Credentials, uploads them to IPFS, and orchestrates all smart contract interactions.Smart Contract (packages/contracts): The CertificateRegistry.sol contract, written in Solidity, which serves as the on-chain source of truth for all issued certificates.3. Technology StackDomainTechnologyMonorepo Managementpnpm Workspaces, TurborepoFrontendNext.js 14 (App Router), React, TypeScript, Tailwind CSS, shadcn/uiBackend APINestJS, TypeScript, Prisma ORM, BullMQAI AgentPython 3.11, FastAPI, Pydantic, Web3.py, Redis-pyBlockchainSolidity 0.8.26, Hardhat, OpenZeppelinDatabasePostgreSQLJob Queue / CacheRedisDecentralized StorageIPFS (via Pinata)DevOpsDocker, Docker Compose, GitHub Actions4. Local Development Setup GuideFollow these steps to set up and run the entire project on your local machine.PrerequisitesEnsure you have the following tools installed:Node.js (v20+)pnpm (v9+)Python (v3.11)Docker DesktopSetup InstructionsClone the Repository:git clone [https://github.com/ahmed9697/web3-certs.git](https://github.com/ahmed9697/web3-certs.git)
+cd web3-certs
+Install Dependencies:From the project root, run the master install command:pnpm install
+Configure Environment Variables (.env files):You must create three separate .env files and populate them with your secret keys.a. Backend API (apps/api/.env):# Get this from a free cloud provider like Neon.tech
+DATABASE_URL="postgresql://user:password@.../neondb?schema=public&sslmode=require"
+b. Smart Contracts (packages/contracts/.env):# For deploying to a public testnet like Amoy
+AMOY_RPC_URL="YOUR_ALCHEMY_HTTPS_URL_FOR_AMOY"
+DEPLOYER_PRIVATE_KEY="YOUR_METAMASK_PRIVATE_KEY_FOR_DEPLOYMENT"
+c. AI Agent (packages/agent/.env):REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+RPC_URL="[http://127.0.0.1:8545](http://127.0.0.1:8545)"
+CONTRACT_ADDRESS="YOUR_LOCALLY_DEPLOYED_CONTRACT_ADDRESS"
+SIGNER_PRIVATE_KEY="A_PRIVATE_KEY_FROM_THE_HARDHAT_NODE_LIST"
+PINATA_API_KEY="YOUR_PINATA_API_KEY"
+PINATA_API_SECRET="YOUR_PINATA_API_SECRET"
+Running the ApplicationYou will need four separate terminals to run the complete system.Terminal 1: Background Services (Docker)# From the project root
+docker compose up -d
+Terminal 2: Local Blockchain Node# Navigate to the contracts package
+cd packages/contracts
+# Start the local node
+pnpm hardhat node
+(Keep this terminal running).Terminal 3: API & Frontend Servers# From the project root (run as administrator if you have permission issues)
+pnpm dev
+Frontend will be available at: http://localhost:3000Backend API will be available at: http://localhost:3001Terminal 4: AI Agent# Navigate to the agent package
+cd packages/agent
+# Activate the virtual environment
+.\venv\Scripts\Activate.ps1
+# Run the worker
+python worker.py
+You can now access the admin dashboard at http://localhost:3000 and use the full application.5. ConclusionThis project successfully demonstrates the power of a hybrid Web3 architecture for building real-world, secure, and scalable applications. The foundation is robust and ready for future expansion with more advanced features.

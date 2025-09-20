@@ -32,53 +32,53 @@ export interface CertificateRegistryInterface extends Interface {
       | "renounceOwnership"
       | "revoke"
       | "transferOwnership"
-      | "verify"
+      | "verify",
   ): FunctionFragment;
 
   getEvent(
     nameOrSignatureOrTopic:
       | "CertificateIssued"
       | "CertificateRevoked"
-      | "OwnershipTransferred"
+      | "OwnershipTransferred",
   ): EventFragment;
 
   encodeFunctionData(
     functionFragment: "certificates",
-    values: [BigNumberish]
+    values: [BigNumberish],
   ): string;
   encodeFunctionData(functionFragment: "issue", values: [string]): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
-    values?: undefined
+    values?: undefined,
   ): string;
   encodeFunctionData(
     functionFragment: "revoke",
-    values: [BigNumberish]
+    values: [BigNumberish],
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
-    values: [AddressLike]
+    values: [AddressLike],
   ): string;
   encodeFunctionData(
     functionFragment: "verify",
-    values: [BigNumberish]
+    values: [BigNumberish],
   ): string;
 
   decodeFunctionResult(
     functionFragment: "certificates",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "issue", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "revoke", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
-    data: BytesLike
+    data: BytesLike,
   ): Result;
   decodeFunctionResult(functionFragment: "verify", data: BytesLike): Result;
 }
@@ -130,38 +130,38 @@ export interface CertificateRegistry extends BaseContract {
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined
+    toBlock?: string | number | undefined,
   ): Promise<Array<TypedEventLog<TCEvent>>>;
   queryFilter<TCEvent extends TypedContractEvent>(
     filter: TypedDeferredTopicFilter<TCEvent>,
     fromBlockOrBlockhash?: string | number | undefined,
-    toBlock?: string | number | undefined
+    toBlock?: string | number | undefined,
   ): Promise<Array<TypedEventLog<TCEvent>>>;
 
   on<TCEvent extends TypedContractEvent>(
     event: TCEvent,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
   on<TCEvent extends TypedContractEvent>(
     filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
 
   once<TCEvent extends TypedContractEvent>(
     event: TCEvent,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
   once<TCEvent extends TypedContractEvent>(
     filter: TypedDeferredTopicFilter<TCEvent>,
-    listener: TypedListener<TCEvent>
+    listener: TypedListener<TCEvent>,
   ): Promise<this>;
 
   listeners<TCEvent extends TypedContractEvent>(
-    event: TCEvent
+    event: TCEvent,
   ): Promise<Array<TypedListener<TCEvent>>>;
   listeners(eventName?: string): Promise<Array<Listener>>;
   removeAllListeners<TCEvent extends TypedContractEvent>(
-    event?: TCEvent
+    event?: TCEvent,
   ): Promise<this>;
 
   certificates: TypedContractMethod<
@@ -195,33 +195,33 @@ export interface CertificateRegistry extends BaseContract {
   >;
 
   getFunction<T extends ContractMethod = ContractMethod>(
-    key: string | FunctionFragment
+    key: string | FunctionFragment,
   ): T;
 
   getFunction(
-    nameOrSignature: "certificates"
+    nameOrSignature: "certificates",
   ): TypedContractMethod<
     [arg0: BigNumberish],
     [[string, bigint] & { ipfsCID: string; status: bigint }],
     "view"
   >;
   getFunction(
-    nameOrSignature: "issue"
+    nameOrSignature: "issue",
   ): TypedContractMethod<[_ipfsCID: string], [bigint], "nonpayable">;
   getFunction(
-    nameOrSignature: "owner"
+    nameOrSignature: "owner",
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "renounceOwnership"
+    nameOrSignature: "renounceOwnership",
   ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "revoke"
+    nameOrSignature: "revoke",
   ): TypedContractMethod<[_certificateId: BigNumberish], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "transferOwnership"
+    nameOrSignature: "transferOwnership",
   ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
   getFunction(
-    nameOrSignature: "verify"
+    nameOrSignature: "verify",
   ): TypedContractMethod<
     [_certificateId: BigNumberish],
     [[string, bigint]],
@@ -229,21 +229,21 @@ export interface CertificateRegistry extends BaseContract {
   >;
 
   getEvent(
-    key: "CertificateIssued"
+    key: "CertificateIssued",
   ): TypedContractEvent<
     CertificateIssuedEvent.InputTuple,
     CertificateIssuedEvent.OutputTuple,
     CertificateIssuedEvent.OutputObject
   >;
   getEvent(
-    key: "CertificateRevoked"
+    key: "CertificateRevoked",
   ): TypedContractEvent<
     CertificateRevokedEvent.InputTuple,
     CertificateRevokedEvent.OutputTuple,
     CertificateRevokedEvent.OutputObject
   >;
   getEvent(
-    key: "OwnershipTransferred"
+    key: "OwnershipTransferred",
   ): TypedContractEvent<
     OwnershipTransferredEvent.InputTuple,
     OwnershipTransferredEvent.OutputTuple,
