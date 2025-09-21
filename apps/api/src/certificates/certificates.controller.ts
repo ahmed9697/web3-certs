@@ -3,75 +3,70 @@ import {
   Post,
   Body,
   UseGuards,
-  Patch,
+  Get,
   Param,
-  Get, // <-- Add 'Get' to imports
+  NotFoundException,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CertificatesService } from './certificates.service';
 import { IssueCertificateDto } from './dto/issue-certificate.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiProperty } from '@nestjs/swagger';
-import { ApiBearerAuth } from '@nestjs/swagger/dist/decorators/api-bearer-auth.decorator';
-import { ApiOperation } from '@nestjs/swagger/dist/decorators/api-operation.decorator';
-import { ApiResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator';
-import { ApiTags } from '@nestjs/swagger/dist/decorators/api-tags.decorator';
-import type { ApiOperationOptions } from '@nestjs/swagger/dist/decorators/api-operation.decorator';
-import type { ApiResponseOptions } from '@nestjs/swagger/dist/decorators/api-response.decorator';
+// import {
+//   ApiTags,
+//   ApiOperation,
+//   ApiResponse,
+//   ApiBearerAuth,
+// } from '@nestjs/swagger'; // <-- تعطيل
+import {
+  JoiValidationPipe,
+  issueCertificateSchema,
+} from './dto/issue-certificate.schema';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import type { UserPayload } from '../auth/interfaces/user-payload.interface';
-import { Certificate } from '@prisma/client';
 
-@ApiTags('Certificates')
+// @ApiTags('certificates') // <-- تعطيل
 @Controller('certificates')
 export class CertificatesController {
   constructor(private readonly certificatesService: CertificatesService) {}
 
   @Post('issue')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Issue a new certificate' } as ApiOperationOptions)
-  @ApiResponse({
-    status: 201,
-    description: 'Certificate issuance process started.',
-  } as ApiResponseOptions)
-  @ApiResponse({ status: 401, description: 'Unauthorized.' } as ApiResponseOptions)
-  create(
-    @Body() issueCertificateDto: IssueCertificateDto,
+  // @ApiBearerAuth() // <-- تعطيل
+  // @ApiOperation({ summary: 'Issue a new certificate' }) // <-- تعطيل
+  // @ApiResponse({ status: 201, description: 'The certificate has been successfully issued.' }) // <-- تعطيل
+  // @ApiResponse({ status: 400, description: 'Bad Request.' }) // <-- تعطيل
+  // @ApiResponse({ status: 401, description: 'Unauthorized.' }) // <-- تعطيل
+  async issueCertificate(
+    @Body(new JoiValidationPipe(issueCertificateSchema))
+    issueCertificateDto: IssueCertificateDto,
     @GetUser() user: UserPayload,
-  ): Promise<Certificate> {
-    return this.certificatesService.create(issueCertificateDto, user.userId);
-  }
-
-  @Patch(':id/finalize')
-  @ApiOperation({ summary: 'Finalize a certificate (internal use by agent)' } as ApiOperationOptions)
-  update(
-    @Param('id') id: string,
-    @Body() updateData: { ipfsCID: string; transactionHash: string },
-  ): Promise<Certificate> {
-    return this.certificatesService.finalize(
-      +id,
-      updateData.ipfsCID,
-      updateData.transactionHash,
+  ) {
+    return this.certificatesService.issueCertificate(
+      issueCertificateDto,
+      user.userId,
     );
   }
 
-  // --- NEW ENDPOINT 1 (for the admin dashboard) ---
   @Get()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'Find all certificates issued by the logged-in user',
-  } as ApiOperationOptions)
-  findAll(@GetUser() user: UserPayload): Promise<Certificate[]> {
-    return this.certificatesService.findAllForUser(user.userId);
+  // @ApiOperation({ summary: 'Get all certificates' }) // <-- تعطيل
+  // @ApiResponse({ status: 200, description: 'Return all certificates.' }) // <-- تعطيل
+  async findAll(@Query('page') page = '1', @Query('limit') limit = '10') {
+    return this.certificatesService.findAll({
+      page: Number(page),
+      limit: Number(limit),
+    });
   }
 
-  // --- NEW ENDPOINT 2 (for the public verification page) ---
-  @Get('public/:id')
-  @ApiOperation({
-    summary: 'Find a single certificate for public verification',
-  } as ApiOperationOptions)
-  findOnePublic(@Param('id') id: string): Promise<Certificate | null> {
-    return this.certificatesService.findOnePublic(+id);
+  @Get(':id')
+  // @ApiOperation({ summary: 'Get a certificate by ID' }) // <-- تعطيل
+  // @ApiResponse({ status: 200, description: 'Return the certificate.' }) // <-- تعطيل
+  // @ApiResponse({ status: 404, description: 'Certificate not found.' }) // <-- تعطيل
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const certificate = await this.certificatesService.findOne(id);
+    if (!certificate) {
+      throw new NotFoundException(`Certificate with ID ${id} not found`);
+    }
+    return certificate;
   }
 }

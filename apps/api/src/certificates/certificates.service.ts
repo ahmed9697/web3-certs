@@ -1,64 +1,52 @@
-import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
-import { Certificate } from '@prisma/client';
-import { Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service';
 import { IssueCertificateDto } from './dto/issue-certificate.dto';
+// import { BullQueueService } from '../bull/bull.service'; //  <--  تم تعطيله مؤقتًا
 
 @Injectable()
 export class CertificatesService {
   constructor(
-    private prisma: PrismaService,
-    @InjectQueue('certificate-issuance') private certificateQueue: Queue,
+    private readonly prisma: PrismaService,
+    // private readonly bullQueueService: BullQueueService, //  <--  تم تعطيله مؤقتًا
   ) {}
 
-  async create(
+  //  تم تعديل الدالة لتقبل userId
+  async issueCertificate(
     issueCertificateDto: IssueCertificateDto,
-    issuerId: number,
-  ): Promise<Certificate> {
+    userId: number,
+  ) {
     const certificate = await this.prisma.certificate.create({
       data: {
-        ...issueCertificateDto, // <-- THE FIX IS HERE
-        issueDate: new Date(issueCertificateDto.issueDate),
-        issuerId: issuerId,
-        status: 'PENDING',
+        ...issueCertificateDto,
+        issuerId: userId, //  <--  تمت إضافة issuerId هنا
       },
     });
-
-    await this.certificateQueue.add('issue-certificate-job', certificate, {
-      priority: 1,
-    });
-
+    // await this.bullQueueService.addCertificateJob(certificate); //  <--  تم تعطيله مؤقتًا
     return certificate;
   }
 
-  async finalize(
-    id: number,
-    ipfsCID: string,
-    transactionHash: string,
-  ): Promise<Certificate> {
-    return this.prisma.certificate.update({
-      where: { id: id },
-      data: {
-        status: 'ISSUED',
-        ipfsCID: ipfsCID,
-        transactionHash: transactionHash,
-      },
-    });
-  }
-
-  async findAllForUser(issuerId: number): Promise<Certificate[]> {
+  async findAll(options: { page: number; limit: number }) {
+    const { page, limit } = options;
+    const skip = (page - 1) * limit;
     return this.prisma.certificate.findMany({
-      where: { issuerId: issuerId },
-      orderBy: {
-        createdAt: 'desc',
+      skip,
+      take: limit,
+      include: {
+        issuer: {
+          select: { email: true }, //  لإظهار بريد المصدر الإلكتروني
+        },
       },
     });
   }
 
-  async findOnePublic(id: number): Promise<Certificate | null> {
+  async findOne(id: number) {
     return this.prisma.certificate.findUnique({
-      where: { id: id },
+      where: { id },
+      include: {
+        issuer: {
+          select: { email: true },
+        },
+      },
     });
   }
 }

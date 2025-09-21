@@ -53,3 +53,14 @@ contract CertificateRegistry is Ownable {
         return (certificate.ipfsCID, certificate.status);
     }
 }
+function issue(string memory _ipfsCID) public onlyOwner returns (uint256) {
+    require(bytes(_ipfsCID).length > 0, "IPFS CID cannot be empty"); //  <--  إضافة هذا السطر
+    uint256 certificateId = _nextCertificateId;
+    certificates[certificateId] = Certificate({
+        ipfsCID: _ipfsCID,
+        status: Status.ISSUED
+    });
+    _nextCertificateId++;
+    emit CertificateIssued(certificateId, _ipfsCID);
+    return certificateId;
+}

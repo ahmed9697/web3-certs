@@ -149,3 +149,19 @@ def main():
 
 if __name__ == "__main__":
     main()
+def upload_to_ipfs(vc_json):
+    print(f"  > Uploading VC to IPFS via Pinata...")
+    headers = {
+        "Content-Type": "application/json",
+        "pinata_api_key": PINATA_API_KEY,
+        "pinata_secret_api_key": PINATA_API_SECRET,
+    }
+    try:
+        response = requests.post(PINATA_UPLOAD_URL, headers=headers, json=vc_json, timeout=10)
+        response.raise_for_status()
+        ipfs_hash = response.json()["IpfsHash"]
+        print(f"  > Successfully uploaded to IPFS. CID: {ipfs_hash}")
+        return ipfs_hash
+    except requests.exceptions.RequestException as e:
+        print(f"  > ❌ ERROR: Failed to upload to IPFS: {e}")
+        raise

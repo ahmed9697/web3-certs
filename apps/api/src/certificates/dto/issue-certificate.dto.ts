@@ -1,34 +1,21 @@
-// Remove decorators to fix TypeScript 5.9 compatibility issues
-// Validation will be handled by ValidationPipe in the controller
+import { IsString, IsEmail, IsDateString, MinLength } from 'class-validator';
 
 export class IssueCertificateDto {
-  /**
-   * Student's full name
-   * @example 'Ahmed Aboessa'
-   */
+  @IsString()
+  @MinLength(2)
   studentName: string;
 
-  /**
-   * Student's email address
-   * @example 'ahmed.aboessa@example.com'
-   */
+  @IsEmail()
   studentEmail: string;
 
-  /**
-   * Name of the degree
-   * @example 'Master of Computer Science'
-   */
+  @IsString()
+  @MinLength(2)
   degreeName: string;
 
-  /**
-   * Subject of the degree
-   * @example 'Computer Science'
-   */
+  @IsString()
+  @MinLength(2)
   degreeSubject: string;
 
-  /**
-   * Date when the certificate is issued
-   * @example '2025-09-15'
-   */
+  @IsDateString()
   issueDate: Date;
 }
