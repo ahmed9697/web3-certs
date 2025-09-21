@@ -6,7 +6,7 @@ The project encountered TypeScript 5.9 decorator compatibility issues with class
 
 ## Solution
 
-We implemented a three-part solution to address the decorator compatibility issues:
+We implemented a two-part solution to address the decorator compatibility issues:
 
 ### 1. TypeScript Configuration
 
@@ -24,7 +24,7 @@ Added the `decorators` option to `tsconfig.json` to use legacy decorator behavio
 
 ### 2. Alternative Validation Approaches
 
-Implemented alternative validation approaches that don't rely on property decorators:
+Implemented two alternative validation approaches that don't rely on property decorators:
 
 #### a. Custom Validation Pipe
 
@@ -37,35 +37,17 @@ Created a custom `ValidationPipe` that uses class-validator without decorators:
   - Validates using class-validator
   - Returns detailed validation error messages
 
-#### b. Custom Schema Validation
+#### b. Joi Schema Validation
 
-Implemented a custom schema validation approach that doesn't rely on external libraries:
+Implemented Joi schema validation as an alternative:
 
 - Schema: `src/certificates/dto/issue-certificate.schema.ts`
 - Pipe: `src/common/pipes/joi-validation.pipe.ts`
 - Features:
-  - Schema-based validation without external dependencies
+  - Schema-based validation
   - Custom error messages
   - String trimming
   - Type conversion
-  - Email format validation
-  - Date validation
-
-### 3. DTO Documentation
-
-Replaced decorators with JSDoc comments in the DTO class:
-
-```typescript
-export class IssueCertificateDto {
-  /**
-   * Student's full name
-   * @example 'Ahmed Aboessa'
-   */
-  studentName: string;
-
-  // Other properties with JSDoc comments
-}
-```
 
 ## Usage
 
